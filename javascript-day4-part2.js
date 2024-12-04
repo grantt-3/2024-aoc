@@ -1,58 +1,41 @@
-function findXmasOccurrences(grid) {
-    // Convert multi-line string to 2D array
-    const gridArray = grid.split('\n').map(row => row.trim());
-    
-    const rows = gridArray.length;
-    const cols = gridArray[0].length;
+function findXmas(grid) {
+    const rows = grid.length;
+    const cols = grid[0].length;
     let xmasCount = 0;
 
-    console.log(rows, cols, gridArray[0])
-    
-    // Possible directions: right, down, diagonal down-right, 
-    const directions = [
-        [0, 1],
-        [1, 0],
-        [1, 1],
-        [1, -1],
-        [0, -1],
-        [-1, 0], 
-        [-1, 1],  
-        [-1, -1] 
-    ];
-    
-    function isValid(r, c) {
-        return r >= 0 && r < rows && c >= 0 && c < cols;
-    }
-    
-    function checkWord(r, c, dr, dc) {
-        let word = '';
-        for (let i = 0; i < 4; i++) {
-            const newR = r + i * dr;
-            const newC = c + i * dc;
-            
-            if (!isValid(newR, newC)) {
-                return false;
-            }
-            
-            word += gridArray[newR][newC];
-        }
-        return word === 'XMAS';
-    }
+    // Potential X centers
+    for (let r = 1; r < rows - 1; r++) {
+        for (let c = 1; c < cols - 1; c++) {
+            // Check all 4 possible X-MAS patterns
+            const patterns = [
+                // Pattern 1: Diagonal from top left
+                [grid[r-1][c-1], grid[r][c], grid[r+1][c+1]],
+                // Pattern 2: Diagonal from top right
+                [grid[r-1][c+1], grid[r][c], grid[r+1][c-1]]
+            ];
 
-    // Check for XMAS in all possible directions from each starting point
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            for (const [dr, dc] of directions) {
-                if (checkWord(r, c, dr, dc)) {
-                    xmasCount++;
+            for (const pattern of patterns) {
+                // Check forward and backward for each letter sequence
+                const letterSeqs = [
+                    ['M', 'A', 'S'],
+                    ['S', 'A', 'M']
+                ];
+                
+                for (const seq of letterSeqs) {
+                    // Check if current diagonals match the sequence
+                    if (seq.every((s, i) => pattern[i] === s)) {
+                        xmasCount++;
+                    }
                 }
             }
         }
     }
-    
+
     return xmasCount;
 }
 
+
+// Placeholder for actual puzzle input
 const grid = `SMXMMAXXXXMMMMSMMASASMSXMMAMSSMXSMMXMASAMXXMAMXAXXAMXAXASMSMSMMMSXXSXSXXAAMXXSXMASMAASXMXMSSMXXXXMMSSSMXSXXMASXMMSMSXMXSSMXSMMMSXMSAMSASXSAM
 MASMMSXMMMMAMSMAXSAMXAXAXXAXSASAMASMMASAMAXMAXMMSXASMMMMSAAXAAAAXSMAAAAMAMXSSMMXMASMSAMXSAAAMSMMMSMAAAMMMXMXAXASAASXASAXMASMAAXXAXMAMXXSSMAM
 MAMAAMXMAXSASAMMMXAMMMMAMMSMSAMXSAMXMASAMMSXSASAMXSMAAAMMXMMSMMXMAMSSMMAAMAMAXAAXMAMXAMSAMMSMAXAAAMMSMMAAXSMMSXMSMMSAMXSXMXXMMSSMMMSMMXMASXM
@@ -194,4 +177,6 @@ MSMMSSXAAXMASMSAMAMAMMASMMMSMSSSMSAMSMMXSASMSMSAMAAASXSMMMASMMMSSMSASXXMAXAXMASX
 XAAAAXSMMMMXMASMMAXMSMASMXAAAAAAAMXMAASAMMXAAAMAMMSMSAMAAXMSAXSAAXMAMSAMXMSMMSAXAAXXAMAXSSMMSAMXSSSSSXSAAAXSMASXSAASXMAMASAMSAAMMXXSAMXAAXSS
 MSMMSXXXAXXSAMXXSASXMXSMXMSMSMMMMMASXSMXSMMSMSMMMAMXMXMSSSXSXMMMSMMMMXXXSAMXXMXMSMSMMSXMAMMXMASAXMMXMASXSSMMMXSXSMXSMSXMXMMMSMXSXMSMSXMSAMAM`;
 
-console.log(`Number of XMAS occurrences: ${findXmasOccurrences(grid)}`);
+const result = findXmas(grid);
+console.log(`Number of X-MAS occurrences: ${result}`);
+
